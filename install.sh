@@ -16,3 +16,6 @@ command -v rustup >/dev/null || curl https://sh.rustup.rs -sSf | sh -s -- -y
 
 cargo install --locked helix-term zellij
 mkdir -p ~/.config/{helix,zellij}
+
+
+    # TODO: add Ghostty and also config files for Helix and zellij + opencode
