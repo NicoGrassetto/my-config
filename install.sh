@@ -31,7 +31,7 @@ cat > "$HOME/.config/alacritty/alacritty.toml" <<'EOF'
 import = ["rose-pine-moon.toml"]
 
 [window]
-opacity = 0.9
+opacity = 0.95
 
 [font]
 normal = { family = "MesloLGM Nerd Font" }
