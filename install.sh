@@ -35,6 +35,20 @@ opacity = 0.9
 
 [font]
 normal = { family = "JetBrainsMono Nerd Font" }
+
+[colors.primary]
+background = "#000000"
+EOF
+
+grep -qs git_prompt "$HOME/.zshrc" || cat >> "$HOME/.zshrc" <<'EOF'
+setopt prompt_subst
+git_prompt() {
+  local ref=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
+  [[ -z $ref ]] && return
+  local dirty; [[ -n $(git status --porcelain 2>/dev/null) ]] && dirty=' %F{yellow}✗'
+  print -r -- "%F{blue}git:(%F{red}${ref//\%/%%}%F{blue})$dirty%f "
+}
+PROMPT='%B%(?.%F{green}.%F{red})➜%f  %F{cyan}%c%f $(git_prompt)%b'
 EOF
 
 if [[ ! -d "$HOME/.config/nvim" ]]; then
@@ -51,6 +65,13 @@ return {
     opts = {
       variant = "moon",
       styles = { transparency = true },
+      highlight_groups = {
+        ["@type"] = { fg = "love" },
+        ["@type.builtin"] = { fg = "pine" },
+        ["@constant.builtin"] = { fg = "pine" },
+        ["@property"] = { fg = "rose" },
+        ["@variable.member"] = { fg = "rose" },
+      },
     },
   },
   {
