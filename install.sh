@@ -11,7 +11,7 @@ if ! command -v brew >/dev/null; then
 fi
 
 brew install git tmux neovim tree-sitter-cli ripgrep fd
-brew install --cask font-jetbrains-mono-nerd-font
+brew install --cask font-jetbrains-mono-nerd-font copilot-cli
 
 if [[ ! -d /Applications/Alacritty.app ]]; then
   url="$(curl -fsSL https://api.github.com/repos/alacritty/alacritty/releases/latest | grep -o 'https://[^"]*\.dmg' | head -n1)"
