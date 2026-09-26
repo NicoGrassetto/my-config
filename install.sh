@@ -12,6 +12,11 @@ fi
 
 brew install git tmux neovim tree-sitter-cli ripgrep fd
 brew install --cask font-meslo-lg-nerd-font copilot-cli
+[[ -d /Applications/Obsidian.app ]] || brew install --cask obsidian
+[[ -d /Applications/Anki.app ]] || brew install --cask anki
+
+git config --global user.name "NicoGrassetto"
+git config --global user.email "nicograssetto@gmail.com"
 
 if [[ ! -d /Applications/Alacritty.app ]]; then
   url="$(curl -fsSL https://api.github.com/repos/alacritty/alacritty/releases/latest | grep -o 'https://[^"]*\.dmg' | head -n1)"
