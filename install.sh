@@ -104,3 +104,7 @@ EOF
 
 "$HOME/.tmux/plugins/tpm/bin/install_plugins"
 nvim --headless "+Lazy! sync" +qa
+
+
+# My wallpapers:
+# https://alphacoders.com/pixel-art-wallpapers
