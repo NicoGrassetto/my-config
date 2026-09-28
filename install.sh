@@ -1,30 +1,44 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+os="$(uname -s)"
+if [[ "$os" != "Darwin" && "$os" != "Linux" ]]; then
+  echo "Unsupported operating system: $os" >&2
+  exit 1
+fi
+
 if ! command -v brew >/dev/null; then
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   if [[ -x /opt/homebrew/bin/brew ]]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
-  else
+  elif [[ -x /home/linuxbrew/.linuxbrew/bin/brew ]]; then
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+  elif [[ -x /usr/local/bin/brew ]]; then
     eval "$(/usr/local/bin/brew shellenv)"
+  else
+    echo "Homebrew was installed but could not be found." >&2
+    exit 1
   fi
 fi
 
-brew install git tmux neovim tree-sitter-cli ripgrep fd
-brew install --cask font-meslo-lg-nerd-font copilot-cli
-[[ -d /Applications/Obsidian.app ]] || brew install --cask obsidian
-[[ -d /Applications/Anki.app ]] || brew install --cask anki
+brew install git tmux neovim tree-sitter-cli ripgrep fd fzf
 
 git config --global user.name "NicoGrassetto"
 git config --global user.email "nicograssetto@gmail.com"
 
-if [[ ! -d /Applications/Alacritty.app ]]; then
-  url="$(curl -fsSL https://api.github.com/repos/alacritty/alacritty/releases/latest | grep -o 'https://[^"]*\.dmg' | head -n1)"
-  curl -fsSL "$url" -o /tmp/Alacritty.dmg
-  hdiutil attach -quiet -nobrowse -mountpoint /tmp/Alacritty /tmp/Alacritty.dmg
-  cp -R /tmp/Alacritty/Alacritty.app /Applications/
-  hdiutil detach -quiet /tmp/Alacritty
-  rm /tmp/Alacritty.dmg
+if [[ "$os" == "Darwin" ]]; then
+  brew install --cask font-meslo-lg-nerd-font copilot-cli
+  [[ -d /Applications/Obsidian.app ]] || brew install --cask obsidian
+  [[ -d /Applications/Anki.app ]] || brew install --cask anki
+
+  if [[ ! -d /Applications/Alacritty.app ]]; then
+    url="$(curl -fsSL https://api.github.com/repos/alacritty/alacritty/releases/latest | grep -o 'https://[^"]*\.dmg' | head -n1)"
+    curl -fsSL "$url" -o /tmp/Alacritty.dmg
+    hdiutil attach -quiet -nobrowse -mountpoint /tmp/Alacritty /tmp/Alacritty.dmg
+    cp -R /tmp/Alacritty/Alacritty.app /Applications/
+    hdiutil detach -quiet /tmp/Alacritty
+    rm /tmp/Alacritty.dmg
+  fi
 fi
 
 mkdir -p "$HOME/.config/alacritty"
@@ -89,6 +103,10 @@ return {
 }
 EOF
 
+nvim --headless -u NONE \
+  "+lua local path = vim.fn.stdpath('config') .. '/lazyvim.json'; local data = vim.json.decode(table.concat(vim.fn.readfile(path), '\n')); local extra = 'lazyvim.plugins.extras.editor.fzf'; data.extras = data.extras or {}; if not vim.tbl_contains(data.extras, extra) then table.insert(data.extras, 1, extra) end; vim.fn.writefile({ vim.json.encode(data) }, path)" \
+  +qa
+
 if [[ ! -d "$HOME/.tmux/plugins/tpm" ]]; then
   git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
 fi
@@ -96,6 +114,7 @@ fi
 cat > "$HOME/.tmux.conf" <<'EOF'
 set -g @plugin 'tmux-plugins/tpm'
 set -g @plugin 'rose-pine/tmux'
+set -g @plugin 'sainnhe/tmux-fzf'
 set -g @rose_pine_variant 'moon'
 set -g @rose_pine_bar_bg_disable 'on'
 set -g @rose_pine_bar_bg_disabled_color_option 'default'
