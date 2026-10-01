@@ -112,6 +112,8 @@ if [[ ! -d "$HOME/.tmux/plugins/tpm" ]]; then
 fi
 
 cat > "$HOME/.tmux.conf" <<'EOF'
+set-hook -g window-resized 'select-layout -E'
+
 set -g @plugin 'tmux-plugins/tpm'
 set -g @plugin 'rose-pine/tmux'
 set -g @plugin 'sainnhe/tmux-fzf'

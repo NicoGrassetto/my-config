@@ -11,3 +11,6 @@ cd my-config
 ```
 
 macOS also installs the configured desktop applications; Linux installs the command-line environment.
+
+tmux automatically balances adjacent panes when the terminal window is resized,
+resetting manually adjusted pane proportions.
