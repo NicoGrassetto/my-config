@@ -103,10 +103,78 @@ return {
 }
 EOF
 
+if ! grep -Fqs 'local function open_explorer()' "$HOME/.config/nvim/lua/config/autocmds.lua"; then
+  cat >> "$HOME/.config/nvim/lua/config/autocmds.lua" <<'EOF'
+
+local function open_explorer()
+  vim.schedule(function()
+    Snacks.explorer({ cwd = LazyVim.root() })
+  end)
+end
+
+if #vim.api.nvim_list_uis() > 0 then
+  open_explorer()
+else
+  vim.api.nvim_create_autocmd("UIEnter", { once = true, callback = open_explorer })
+end
+EOF
+fi
+
 nvim --headless -u NONE \
   "+lua local path = vim.fn.stdpath('config') .. '/lazyvim.json'; local data = vim.json.decode(table.concat(vim.fn.readfile(path), '\n')); local extra = 'lazyvim.plugins.extras.editor.fzf'; data.extras = data.extras or {}; if not vim.tbl_contains(data.extras, extra) then table.insert(data.extras, 1, extra) end; vim.fn.writefile({ vim.json.encode(data) }, path)" \
   +qa
 
+# tmux shortcuts
+# The default prefix is Ctrl+b: press and release it before the next key.
+#
+# Sessions (the outermost layer)
+# From your shell:
+#   tmux                       Start a new session.
+#   tmux new -s name           Start a named session.
+#   tmux ls                    List sessions.
+#   tmux attach -t name        Reattach to a named session.
+#   tmux a                     Reattach to the most recently used session.
+#   tmux kill-session -t name  Kill a session.
+# Inside tmux:
+#   prefix d                  Detach; the session keeps running in the background.
+#   prefix s                  Show an interactive session list.
+#   prefix $                  Rename the session.
+#   prefix ( / prefix )       Switch to the previous/next session.
+#
+# Windows (like tabs)
+#   prefix c                  Create a window.
+#   prefix ,                  Rename the window.
+#   prefix n / prefix p       Go to the next/previous window.
+#   prefix 0-9                Jump to a window by number.
+#   prefix w                  Show an interactive window/session tree.
+#   prefix &                  Close the window, with confirmation.
+#
+# Panes (splits)
+#   prefix %                  Split left/right.
+#   prefix "                  Split top/bottom.
+#   prefix arrow keys         Move between panes.
+#   prefix o                  Cycle through panes.
+#   prefix z                  Zoom/unzoom the current pane.
+#   prefix x                  Close the pane, with confirmation.
+#   prefix { / prefix }       Swap pane positions.
+#   prefix Space              Cycle through layouts.
+#   prefix Ctrl+arrow         Resize panes; hold Ctrl while repeating the arrow.
+#
+# Scrolling and copying
+#   prefix [                  Enter copy/scroll mode.
+#   arrows / PgUp / PgDn      Scroll in copy mode; q exits.
+#   Ctrl+s / Ctrl+r           Search forward/backward with emacs-style keys.
+#   Ctrl+Space                Start a selection with emacs-style keys.
+#   Alt+w                     Copy the selection and exit with emacs-style keys.
+#   prefix ]                  Paste.
+# With set -g mode-keys vi, use / and ? to search, Space to select, and Enter
+# to copy. Using v to select and y to yank requires custom copy-mode-vi bindings.
+#
+# Misc
+#   prefix ?                  List all keybindings.
+#   prefix :                  Open the tmux command prompt.
+#   setw synchronize-panes    Toggle typing in all panes from that prompt.
+#   prefix t                  Show a clock.
 if [[ ! -d "$HOME/.tmux/plugins/tpm" ]]; then
   git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
 fi
