@@ -103,6 +103,51 @@ return {
 }
 EOF
 
+cat > "$HOME/.config/nvim/lua/plugins/markdown.lua" <<'EOF'
+return {
+  { import = "lazyvim.plugins.extras.formatting.prettier" },
+  { import = "lazyvim.plugins.extras.lang.yaml" },
+  {
+    "nvim-treesitter/nvim-treesitter",
+    init = function()
+      vim.filetype.add({ extension = { mdx = "mdx" } })
+      vim.treesitter.language.register("markdown", "mdx")
+    end,
+  },
+  {
+    "mason-org/mason.nvim",
+    opts = {
+      ensure_installed = { "markdownlint-cli2" },
+    },
+  },
+  {
+    "mfussenegger/nvim-lint",
+    opts = {
+      linters_by_ft = {
+        markdown = { "markdownlint-cli2" },
+        mdx = { "markdownlint-cli2" },
+      },
+    },
+  },
+  {
+    "neovim/nvim-lspconfig",
+    opts = {
+      servers = {
+        mdx_analyzer = {},
+      },
+    },
+  },
+  {
+    "stevearc/conform.nvim",
+    opts = {
+      formatters_by_ft = {
+        mdx = { "prettier" },
+      },
+    },
+  },
+}
+EOF
+
 if ! grep -Fqs 'local function open_explorer()' "$HOME/.config/nvim/lua/config/autocmds.lua"; then
   cat >> "$HOME/.config/nvim/lua/config/autocmds.lua" <<'EOF'
 
